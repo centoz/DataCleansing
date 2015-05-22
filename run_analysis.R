@@ -8,14 +8,14 @@
 
 # Check that required data files are located in
 # the "Assignment" and related folders
-requiredFiles <- c("Assignment/activity_labels.txt", 
-                   "Assignment/features.txt",
-                   "Assignment/test/subject_test.txt",
-                   "Assignment/test/X_test.txt",
-                   "Assignment/test/y_test.txt",
-                   "Assignment/train/subject_train.txt",
-                   "Assignment/train/X_train.txt",
-                   "Assignment/train/y_train.txt")
+requiredFiles <- c("activity_labels.txt", 
+                   "features.txt",
+                   "test/subject_test.txt",
+                   "test/X_test.txt",
+                   "test/y_test.txt",
+                   "train/subject_train.txt",
+                   "train/X_train.txt",
+                   "train/y_train.txt")
 
 for (filename in requiredFiles) {
     if(!file.exists(filename)) {
@@ -27,35 +27,37 @@ for (filename in requiredFiles) {
 library(dplyr)
 
 # Read activity labels and features
-activityLabels <- read.table("Assignment/activity_labels.txt", 
+activityLabels <- read.table("activity_labels.txt", 
                              col.names = c("ActivityId", "Activity"))
-features <- read.table("Assignment/features.txt", 
+features <- read.table("features.txt", 
                        col.names = c("FeatureId", "FeatureDesc"),
                        colClasses = "character")
 
 # Read training dataset
-subjectTrain <- read.table("Assignment/train/subject_train.txt")
-xTrain <- read.table("Assignment/train/x_train.txt")
-yTrain <- read.table("Assignment/train/y_train.txt")
+subjectTrain <- read.table("train/subject_train.txt")
+xTrain <- read.table("train/x_train.txt")
+yTrain <- read.table("train/y_train.txt")
 trainData <- cbind(subjectTrain, yTrain, xTrain)
 
 # Read test dataset
-subjectTest <- read.table("Assignment/test/subject_test.txt")
-xTest <- read.table("Assignment/test/x_test.txt")
-yTest <- read.table("Assignment/test/y_test.txt")
+subjectTest <- read.table("test/subject_test.txt")
+xTest <- read.table("test/x_test.txt")
+yTest <- read.table("test/y_test.txt")
 testData <- cbind(subjectTest, yTest, xTest)
 
-# Combine both datasets
+# [STEP 1] [STEP 4]
+# Combine both datasets and apply feature names to columns
 data <- rbind(trainData, testData)
 names(data) <- c("Subject", "ActivityId", features$FeatureDesc)
 
-
+# [STEP 2]
 # Obtain only columns with "mean" and "std" by getting their
 #  column number and then doing a sort to keep column order
 meanCols <- grep("mean", names(data))
 stdCols <- grep("std", names(data))
 columns <- sort(as.numeric(c(meanCols, stdCols)))
 
+# [STEP 3]
 # Match the activity Id numbers with descriptions
 data2 <- data[, c(1, 2, columns)]
 data3 <- inner_join(data2, activityLabels, by = c("ActivityId" = "ActivityId"))
@@ -67,6 +69,7 @@ names(data3) <- sub("-", "_", names(data3), fixed = TRUE)
 names(data3) <- sub("()-", "_", names(data3), fixed = TRUE)
 names(data3) <- sub("()", "", names(data3), fixed = TRUE)
 
+# [STEP 5]
 # Define grouping and calculate mean for each variable
 group <- group_by(data3, Subject, Activity)
 dataTidy <- summarise_each(group, funs(mean))
