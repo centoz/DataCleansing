@@ -25,6 +25,7 @@ In order to run this script, the following packages need to be installed:
 
 ## Processing
 Processing the data involves a number of steps:
+
 1. The eight data files are loaded from the file system and stored as separate data frames.
 2. The "test" and the "train" data are then combined to form one larger dataframe. At this stage, there are no identifiers indicating where each record came from. Column names are obtained and applied from the Features data (features.txt).
 3. Columns that do not contain either "mean" or "std" in the name are excluded from additional processing. The column numbers with "mean" or "std" are then collected and sorted before the dataset is subsetted to keep columns in similar order.
