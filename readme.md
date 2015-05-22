@@ -21,7 +21,7 @@ Files that are missing will be detected in the script and the files must be plac
 
 ## Required Packages
 In order to run this script, the following packages need to be installed:
-*dplyr
+* dplyr
 
 ## Processing
 Processing the data involves a number of steps:
