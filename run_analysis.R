@@ -6,8 +6,8 @@
 ## text file.
 ######################################################
 
-# Check that required data files are located in
-# the "Assignment" and related folders
+# Check that required data files are located in current
+#   working folder and test/train subdirectories
 requiredFiles <- c("activity_labels.txt", 
                    "features.txt",
                    "test/subject_test.txt",
@@ -51,20 +51,20 @@ data <- rbind(trainData, testData)
 names(data) <- c("Subject", "ActivityId", features$FeatureDesc)
 
 # [STEP 2]
-# Obtain only columns with "mean" and "std" by getting their
+# Obtain only columns with "mean()" and "std()" by getting their
 #  column number and then doing a sort to keep column order
-meanCols <- grep("mean", names(data))
-stdCols <- grep("std", names(data))
+# Create data2 data frame with Subject, Activity and mean() and std() columns
+meanCols <- grep("mean+[()]", names(data))
+stdCols <- grep("std+[()]", names(data))
 columns <- sort(as.numeric(c(meanCols, stdCols)))
+data2 <- data[, c(1, 2, columns)]
 
 # [STEP 3]
-# Match the activity Id numbers with descriptions
-data2 <- data[, c(1, 2, columns)]
+# Match the activity Id numbers with descriptions and drop Activity Id column
 data3 <- inner_join(data2, activityLabels, by = c("ActivityId" = "ActivityId"))
-#data3 <- data3[, c(1, 82, 3:81)]
+data3 <- data3[, c(1, 69, 3:68)]
 
-# Clean variable names by removing dashes and
-#   brackets and replacing them with _
+# Clean variable names by removing dashes and brackets and replacing them with _
 names(data3) <- sub("-", "_", names(data3), fixed = TRUE)
 names(data3) <- sub("()-", "_", names(data3), fixed = TRUE)
 names(data3) <- sub("()", "", names(data3), fixed = TRUE)
@@ -74,5 +74,10 @@ names(data3) <- sub("()", "", names(data3), fixed = TRUE)
 group <- group_by(data3, Subject, Activity)
 dataTidy <- summarise_each(group, funs(mean))
 
-# Write the dataset as text file
+# Write the dataset as text file to "results.txt"
 write.table(dataTidy, file = "results.txt", row.names = FALSE)
+
+# Optional: cleanup variables after processing
+remove(testData, trainData, xTest, xTrain, yTest, yTrain, subjectTest, subjectTrain,
+       features, group, data, data2, data3, activityLabels, filename,
+       columns, meanCols, stdCols, requiredFiles)
