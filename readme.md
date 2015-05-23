@@ -38,4 +38,4 @@ Processing the data involves a number of steps:
 
 ## Reading the Results
 The results can be read using the read.table function, for example:
-data <- read.table("results.txt")
+data <- read.table("results.txt", header = TRUE)
